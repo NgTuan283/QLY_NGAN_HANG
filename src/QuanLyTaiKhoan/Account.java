@@ -162,6 +162,9 @@ public class Account extends Menu {
                 System.out.print(t.toString());
             }
         }
+        if (transactionDiary.size() == 0) {
+            System.out.println("\nBan chua co giao dich nao tren he thong !");
+        }
     }
 
     @Override
