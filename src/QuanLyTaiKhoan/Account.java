@@ -8,7 +8,7 @@ public class Account extends Menu {
     private int accountID, pin;
     private Double balance;
     private static int countAccountID = 10000;
-    // tao ra mot danh sach luu cac tai khoan giao dich trong loplop
+    // tao ra mot danh sach luu cac tai khoan giao dich trong lop
     static Vector<Account> accountList = new Vector<Account>(10, 5);
     static Vector<Transaction> transactionDiary = new Vector<Transaction>(10, 5);
     static Scanner sc = new Scanner(System.in); // Scanner dùng chung
