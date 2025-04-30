@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        // Tạo dữ liệu mẫu
+        // Tạ1100o dữ liệu mẫu
         Account acc1 = new Account(1000000, 123456); // accountID = 10000
         Account acc2 = new Account(500000, 654321);  // accountID = 10001
         Account.accountList.add(acc1);
