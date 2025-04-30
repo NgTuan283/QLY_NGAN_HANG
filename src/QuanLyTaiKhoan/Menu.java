@@ -13,7 +13,7 @@ import java.util.Vector;
 
 /**
  *
- * @author An Nguyen
+
  */
 public abstract class Menu {
 
