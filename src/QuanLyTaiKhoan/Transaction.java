@@ -11,7 +11,6 @@ import java.util.Date;
 
 /**
  *
- * @author An Nguyen
  */
 public class Transaction {
 
