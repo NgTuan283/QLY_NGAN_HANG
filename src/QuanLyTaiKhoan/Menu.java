@@ -13,10 +13,6 @@ import java.util.Vector;
 
 /**
  *
-<<<<<<< HEAD
-=======
-
->>>>>>> 3615b2d70bb7be6a6de90c7202ddcad12f50c1b1
  */
 public abstract class Menu {
 
@@ -61,13 +57,13 @@ public abstract class Menu {
         Scanner sc = new Scanner(System.in);
         String lc;
         int numberChoose = 0;
-        System.out.println("Mời chọn mục: ");
+        System.out.println("Moi chon muc: ");
         lc = sc.nextLine();
         try {
             numberChoose = Integer.parseInt(lc);
             sc.close();
         } catch (NumberFormatException e) {
-            System.out.println("Lỗi: Phải nhập vào kiểu số nguyên !");
+            System.out.println("Loi: phai nhapp vao kieu so nguyen !");
         }
         return numberChoose;
     }
@@ -81,7 +77,7 @@ public abstract class Menu {
         do {
             lc = getSelected();
             if (lc > luaChon.size() - 2 || lc <= 0) {
-                System.out.println("Lựa chọn không đúng !\n\t\tVietcombank hẹn gặp lại quý khách !");
+                System.out.println("Lua chon khong dung !\n\t\tHen gap lai quy khach !");
                 System.exit(0);
             }
             execute(lc);
