@@ -282,35 +282,59 @@ public class Account extends Menu {
         double st = 0D;
         System.out.println("\n\t\t------- Chuyen tien -------");
         try {
-            System.out.println("So tai khoan nhan tien: ");
+            System.out.print("Ma tai khoan nhan tien: ");
             stkIn = Integer.parseInt(sc.nextLine());
             Account in = getAccountByID(stkIn);
-            if (in == null) {
+
+            while (in == null) {
                 System.out.println ("Khong tim thay tai khoan !");
-                while (in == null) {
-                    System.out.print("Nhap lai so tai khoan nhan tien: ");
+
+                System.out.println("1. Nhap lai ma tai khoan");
+                System.out.println("2. Thoat");
+                System.out.print("Chon: ");
+                String option = sc.nextLine();
+    
+                if (option.equals("2")) {
+                    System.out.println(">>> Huy chuyen tien.");
+                    return;
+                } else if (option.equals("1")) {
+                    System.out.print("Ma tai khoan nhan tien: ");
                     stkIn = Integer.parseInt(sc.nextLine());
                     in = getAccountByID(stkIn);
-                    if(in == null) System.out.println("Khong tim thay tai khoan !");
-                    if(in != null) break;
+                } else {
+                    System.out.println("Lua chon khong hop le. Thoat ve menu chinh.");
+                    return;
                 }
             }
-            System.out.println("So tai khoan chuyen tien");
+
+            System.out.print("Ma tai khoan chuyen tien :");
             stkOut = Integer.parseInt(sc.nextLine());
             Account out = getAccountByID(stkOut);
-            if (out == null) {
-                System.out.println ("Khong tim thay tai khoan nay!");
-                while (out == null) {
-                    System.out.print("Nhap lai so tai khoan chuyen tien: ");
+
+            while (out == null) {
+                System.out.println ("Khong tim thay tai khoan !");
+
+                System.out.println("1. Nhap lai ma tai khoan");
+                System.out.println("2. Thoat");
+                System.out.print("Chon: ");
+                String option = sc.nextLine();
+    
+                if (option.equals("2")) {
+                    System.out.println(">>> Huy chuyen tien.");
+                    return;
+                } else if (option.equals("1")) {
+                    System.out.print("Ma tai khoan chuyen tien: ");
                     stkOut = Integer.parseInt(sc.nextLine());
                     out = getAccountByID(stkOut);
-                    if(out == null) System.out.println("Khong tim thay so tai khoan nay !");
-                    if(out != null) break;
+                } else {
+                    System.out.println("Lua chon khong hop le. Thoat ve menu chinh.");
+                    return;
                 }
             }
-            System.out.println("So tien can chuyen: ");
+
+            System.out.print("So tien can chuyen: ");
             st = Double.parseDouble(sc.nextLine());
-            System.out.println("Noi dung chuyen tien: ");
+            System.out.print("Noi dung chuyen tien: ");
             String mt = sc.nextLine();
             transferMoney(in, out, st, out.getAccountID() + " chuyen tien cho " + in.getAccountID() + ", noi dung: " + mt);
             System.out.println(">>> Chuyen khoan thanh cong !");
