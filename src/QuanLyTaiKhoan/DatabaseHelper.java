@@ -22,15 +22,22 @@ public class DatabaseHelper {
         return DriverManager.getConnection(URL, USER, PASSWORD);
     }
 
-    public static void insertAccount(Account acc) throws SQLException {
-        String sql = "INSERT INTO Account (accountID, pin, balance) VALUES (?, ?, ?)";
-        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, acc.getAccountID());
-            ps.setString(2, acc.getPin());
-            ps.setDouble(3, acc.getBalance());
+    public static int insertAccount(Account acc) throws SQLException {
+        String sql = "INSERT INTO Account (pin, balance) VALUES (?, ?)";
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+    
+            ps.setString(1, acc.getPin());
+            ps.setDouble(2, acc.getBalance());
             ps.executeUpdate();
+    
+            ResultSet rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                return rs.getInt(1); // accountID được tạo bởi SQL
+            }
         }
-    }
+        return -1;
+    }    
 
     public static void updateAccount(Account acc) throws SQLException {
         String sql = "UPDATE Account SET pin = ?, balance = ? WHERE accountID = ?";

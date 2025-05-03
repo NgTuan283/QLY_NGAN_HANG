@@ -1,28 +1,18 @@
 package QuanLyTaiKhoan;
 
-
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
-import java.util.Vector;
 
 public abstract class Menu {
+    private List<String> luaChon = new ArrayList<>();
+    protected static final Scanner sc = new Scanner(System.in);
 
-
-    private Vector<String> luaChon = new Vector<String>(10, 5);
-
-
-    public Menu() {
-
-
-    }
-
+    public Menu() {}
 
     public Menu(String[] inLuaChon) {
-        luaChon.clear();
-        for (String lc : inLuaChon) {
-            luaChon.add(lc);
-        }
+        setMenu(inLuaChon);
     }
-
 
     public void setMenu(String[] inLuaChon) {
         luaChon.clear();
@@ -31,56 +21,58 @@ public abstract class Menu {
         }
     }
 
-
     public void display() {
-        System.out.println("\n\n\t\t\t" + luaChon.elementAt(1) + "\n");
-        System.out.println("-------- " + luaChon.elementAt(0) + " --------");
+        if (luaChon.size() < 2) {
+            System.out.println("Menu khong hop le.");
+            return;
+        }
+
+        System.out.println("\n\n\t\t\t" + luaChon.get(1) + "\n");
+        System.out.println("-------- " + luaChon.get(0) + " --------");
+
         for (int i = 2; i < luaChon.size(); i++) {
-            System.out.println(i - 1 + "." + luaChon.get(i));
+            System.out.println((i - 1) + ". " + luaChon.get(i));
         }
         System.out.println("---------- *** ----------");
     }
 
-
     public int getSelected() {
-        display();
-        Scanner sc = new Scanner(System.in);
-        String lc;
-        int numberChoose = 0;
-        System.out.println("Moi chon muc: ");
-        lc = sc.nextLine();
-        try {
-            numberChoose = Integer.parseInt(lc);
-            sc.close();
-        } catch (NumberFormatException e) {
-            System.out.println("Loi: phai nhapp vao kieu so nguyen !");
-        }
-        return numberChoose;
-    }
+        int choice;
+        while (true) {
+            display();
+            System.out.print("Moi chon muc: ");
+            String input = sc.nextLine();
 
+            try {
+                choice = Integer.parseInt(input);
+                if (choice > 0 && choice < luaChon.size() - 1) {
+                    return choice;
+                } else if (choice == luaChon.size() - 1) {
+                    System.out.println("\n\t\tHen gap lai quy khach!");
+                    System.exit(0);
+                } else {
+                    System.out.println("Lua chon khong hop le. Vui long chon lai.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Loi: Phai nhap vao so nguyen.");
+            }
+        }
+    }
 
     public abstract void execute(int n);
 
-
     public void run() {
-        int lc = -1;
-        do {
-            lc = getSelected();
-            if (lc > luaChon.size() - 2 || lc <= 0) {
-                System.out.println("Lua chon khong dung !\n\t\tHen gap lai quy khach !");
-                System.exit(0);
-            }
+        while (true) {
+            int lc = getSelected();
             execute(lc);
-        } while (lc <= luaChon.size() - 2 && lc > 0);
+        }
     }
 
-
-    public Vector<String> getLuaChon() {
+    public List<String> getLuaChon() {
         return luaChon;
     }
 
-
-    public void setLuaChon(Vector<String> luaChon) {
+    public void setLuaChon(List<String> luaChon) {
         this.luaChon = luaChon;
     }
 }
