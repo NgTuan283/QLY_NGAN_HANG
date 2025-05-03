@@ -1,4 +1,5 @@
 // service/LogService.java
+// xuất ra toàn bộ lịch sử thoa tác của nhân viên
 package service;
 
 import model.Log;
@@ -8,42 +9,56 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LogService {
-    // public List<Log> getAllLogs() {
-    //     List<Log> logs = new ArrayList<>();
-    //     String sql = "SELECT * FROM Log";
-    //     try (Connection conn = DatabaseConnection.getConnection();
-    //          Statement stmt = conn.createStatement();
-    //          ResultSet rs = stmt.executeQuery(sql)) {
-    //         while (rs.next()) {
-    //             Log log = new Log();
-    //             log.setLogId(rs.getString("log_id"));
-    //             log.setEmployeeId(rs.getString("employee_id"));
-    //             log.setAction(rs.getString("action"));
-    //             log.setTarget(rs.getString("target"));
-    //             log.setTargetId(rs.getString("target_id"));
-    //             log.setActionTime(rs.getTimestamp("action_time").toLocalDateTime());
-    //             logs.add(log);
-    //         }
-    //     } catch (SQLException e) {
-    //         e.printStackTrace();
-    //     }
-    //     return logs;
-    // }
-     public List<Log> getAllLogs() {
+
+    // Lọc lịch sử hoạt động của nhân viên theo thời gian
+    public List<Log> getLogsByTimeRange(LocalDateTime start, LocalDateTime end) {
         List<Log> logs = new ArrayList<>();
-        logs.add(mockLog("e001", "Thêm", "Employee", "e001"));
-        logs.add(mockLog("e002", "Xem", "Customer", "c123"));
+        String sql = "SELECT * FROM Log WHERE action_time BETWEEN ? AND ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setTimestamp(1, Timestamp.valueOf(start));
+            stmt.setTimestamp(2, Timestamp.valueOf(end));
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                // Khởi tạo và thêm Log vào danh sách
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return logs;
     }
-
-    private Log mockLog(String empId, String action, String target, String targetId) {
-        Log log = new Log();
-        log.setLogId("log_" + System.currentTimeMillis());
-        log.setEmployeeId(empId);
-        log.setAction(action);
-        log.setTarget(target);
-        log.setTargetId(targetId);
-        log.setActionTime(LocalDateTime.now());
-        return log;
+    
+    // Lọc lịch sử hoạt động của nhân viên theo log ID
+    public Log getLogById(String logId) {
+        String sql = "SELECT * FROM Log WHERE log_id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, logId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                // Khởi tạo và trả về Log
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
+    
+    //  Lọc lịch sử hoạt động của nhân viên theo mã nhân viên
+    public List<Log> getLogsByEmployeeId(String employeeId) {
+        List<Log> logs = new ArrayList<>();
+        String sql = "SELECT * FROM Log WHERE employee_id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, employeeId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                // Khởi tạo và thêm Log vào danh sách
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return logs;
+    }
+    
 }

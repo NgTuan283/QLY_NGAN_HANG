@@ -7,6 +7,22 @@ import java.sql.*;
 
 
 public class ReportService {
+    // Truy xuất 
+    public Customer getCustomerById(String customerId) {
+        String sql = "SELECT * FROM Customer WHERE customer_id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, customerId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                // Khởi tạo và trả về đối tượng Customer
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
     public int getTotalCustomers() {
         return count("Customer");
     }
@@ -36,15 +52,5 @@ public class ReportService {
         }
         return 0;
     }
-    // public int getTotalCustomers() {
-    //     return 42; // giả lập số lượng khách hàng
-    // }
-
-    // public int getTotalTransactions() {
-    //     return 130; // giả lập số lượng giao dịch
-    // }
-
-    // public int getTotalLoans() {
-    //     return 27; // giả lập số lượng khoản vay
-    // }
+    
 }

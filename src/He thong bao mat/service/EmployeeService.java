@@ -15,6 +15,7 @@ public class EmployeeService {
     private String hashPassword(String plainPassword) {
     return org.mindrot.jbcrypt.BCrypt.hashpw(plainPassword, org.mindrot.jbcrypt.BCrypt.gensalt());
 }
+
     // thêm nhân viên mới
     public void addEmployee(Employee employee) {
         String sql = "INSERT INTO Employee (employee_id, full_name, username, password, role, created_time) VALUES (?, ?, ?, ?, ?, ?)";
@@ -32,35 +33,72 @@ public class EmployeeService {
         }
     }
 
-    // cập nhật thông tin nhân viên 
-    public void updateEmployee(Employee employee) {
-        String sql = "UPDATE Employee SET full_name=?, username=?, password=?, role=? WHERE employee_id=?";
+    // cập nhật thông tin nhân viên ( yêu cầu đúng mật khẩu mởi có thể cập nhật)
+    public void updateEmployee(Employee employee, String currentPlainPassword) {
+        // Lấy mật khẩu đã hash từ DB
+        String sqlCheck = "SELECT password FROM Employee WHERE employee_id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, employee.getFullName());
-            stmt.setString(2, employee.getUsername());
-            stmt.setString(3, hashPassword(employee.getPassword()));
-            stmt.setString(4, employee.getRole());
-            stmt.setString(5, employee.getEmployeeId());
-            stmt.executeUpdate();
+             PreparedStatement checkStmt = conn.prepareStatement(sqlCheck)) {
+            checkStmt.setString(1, employee.getEmployeeId());
+            ResultSet rs = checkStmt.executeQuery();
+            if (rs.next()) {
+                String hashedPassword = rs.getString("password");
+    
+                // Kiểm tra mật khẩu hiện tại
+                if (BCrypt.checkpw(currentPlainPassword, hashedPassword)) {
+                    // Mật khẩu đúng → cập nhật
+                    String sqlUpdate = "UPDATE Employee SET full_name=?, username=?, password=?, role=? WHERE employee_id=?";
+                    try (PreparedStatement updateStmt = conn.prepareStatement(sqlUpdate)) {
+                        updateStmt.setString(1, employee.getFullName());
+                        updateStmt.setString(2, employee.getUsername());
+                        updateStmt.setString(3, hashPassword(employee.getPassword())); // mật khẩu mới
+                        updateStmt.setString(4, employee.getRole());
+                        updateStmt.setString(5, employee.getEmployeeId());
+                        updateStmt.executeUpdate();
+                        System.out.println("Cập nhật nhân viên thành công.");
+                    }
+                } else {
+                    System.out.println("Sai mật khẩu hiện tại. Không thể cập nhật.");
+                }
+            } else {
+                System.out.println("Không tìm thấy nhân viên với ID: " + employee.getEmployeeId());
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+    
 
-    // xoá nhân viên
-    public void deleteEmployee(String employeeId) {
-        String sql = "DELETE FROM Employee WHERE employee_id=?";
+    // xoá nhân viên( yêu cầu nhập đúng mật khẩu của nhân viên bị xoá)
+    public void deleteEmployee(String employeeId, String plainPassword) {
+        String sqlCheck = "SELECT password FROM Employee WHERE employee_id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, employeeId);
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
+             PreparedStatement checkStmt = conn.prepareStatement(sqlCheck)) {
+    
+            checkStmt.setString(1, employeeId);
+            ResultSet rs = checkStmt.executeQuery();
+    
+            if (rs.next()) {
+                String hashedPassword = rs.getString("password");
+    
+                // So sánh mật khẩu nhập với mật khẩu đã hash trong DB
+                if (BCrypt.checkpw(plainPassword, hashedPassword)) {
+                    // Nếu đúng, tiến hành xóa
+                    String sqlDelete = "DELETE FROM Employee WHERE employee_id = ?";
+                    try (PreparedStatement deleteStmt = conn.prepareStatement(sqlDelete)) {
+                        deleteStmt.setString(1, employeeId);
+                        deleteStmt.executeUpdate();
+                        System.out.println("Đã xóa nhân viên: " + employeeId);
+                    }
+                } else {
+                    System.out.println("Sai mật khẩu. Không thể xóa nhân viên.");
+                }
+            } else {
+                System.out.println("Không tìm thấy nhân viên với ID: " + employeeId);
+            }
         }
-    }
-
-    // in ra danh sách nhân viên
+    
+    // xem danh sách nhân viên
     public List<Employee> getAllEmployees() {
         List<Employee> employees = new ArrayList<>();
         String sql = "SELECT * FROM Employee";
@@ -85,38 +123,5 @@ public class EmployeeService {
         return employees;
     }
 
-//     private String hashPassword(String plainPassword) {
-//         return BCrypt.hashpw(plainPassword, BCrypt.gensalt());
-//     }
-// private List<Employee> mockEmployees = new ArrayList<>();
 
-// public void addEmployee(Employee employee) {
-//     // Giả lập thêm vào danh sách
-//     mockEmployees.add(employee);
-//     System.out.println("Employee added: " + employee.getFullName());
-// }
-
-// public void updateEmployee(Employee employee) {
-//     for (int i = 0; i < mockEmployees.size(); i++) {
-//         if (mockEmployees.get(i).getEmployeeId().equals(employee.getEmployeeId())) {
-//             mockEmployees.set(i, employee);
-//             System.out.println("Employee updated: " + employee.getFullName());
-//             return;
-//         }
-//     }
-//     System.out.println("Employee not found for update.");
-// }
-
-// public void deleteEmployee(String employeeId) {
-//     mockEmployees.removeIf(emp -> emp.getEmployeeId().equals(employeeId));
-//     System.out.println("Employee deleted: " + employeeId);
-// }
-
-// public List<Employee> getAllEmployees() {
-//     if (mockEmployees.isEmpty()) {
-//         mockEmployees.add(new Employee("e001", "Nguyen Van A", "nva", "123", "admin", LocalDateTime.now()));
-//         mockEmployees.add(new Employee("e002", "Tran Thi B", "ttb", "123", "staff", LocalDateTime.now()));
-//     }
-//     return mockEmployees;
-// }
 }
