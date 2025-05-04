@@ -19,6 +19,16 @@ public class Customer extends User {
         this.createdTime = LocalDateTime.now();
     }
 
+    public Customer(int ID, String username, String password, String fullName,
+            String phoneNumber, String email, String address, LocalDateTime createdTime) {
+        super(username, password, fullName);
+        this.ID = ID;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
+        this.address = address;
+        this.createdTime = createdTime;
+    }
+
     public LocalDateTime getCreatedTime() {
         return createdTime;
     }
@@ -69,5 +79,9 @@ public class Customer extends User {
 
     public String getAddress() {
         return address;
+    }
+
+    public String getPassword() {
+        return password;
     }
 }

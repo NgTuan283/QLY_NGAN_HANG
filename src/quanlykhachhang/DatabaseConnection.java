@@ -1,10 +1,16 @@
 package quanlykhachhang;
 
 import java.sql.*;
+<<<<<<< HEAD:src/quanlykhachhang/DatabaseHelper.java
 import java.util.ArrayList;
 import java.util.List;
+=======
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+>>>>>>> 3e746b1e365039f6023c7e756c0acf9c0bc03171:src/quanlykhachhang/DatabaseConnection.java
 
-public class DatabaseHelper {
+public class DatabaseConnection {
 
     // Cau hinh ket noi voi SQL Server
     private static final String URL = "jdbc:sqlserver://NGUYEN-TUAN\\NGUYENTUAN:1433;databaseName=BankDB;encrypt=true;trustServerCertificate=true";
