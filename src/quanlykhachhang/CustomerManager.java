@@ -1,4 +1,3 @@
-package quanlykhachhang;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -7,12 +6,12 @@ public class CustomerManager {
 
     public void addCustomer(Customer c) {
         customers.add(c);
-        System.out.println("Khách hàng đã được thêm thành công.");
+        System.out.println("Khach hang da duoc them thanh cong.");
     }
 
     public void listCustomers() {
         if (customers.isEmpty()) {
-            System.out.println("Không có khách hàng.");
+            System.out.println("Khong co khach hang.");
             return;
         }
         for (Customer c : customers) {
@@ -23,40 +22,40 @@ public class CustomerManager {
     public void removeCustomer(String username) {
         boolean removed = customers.removeIf(c -> c.getUsername().equals(username));
         if (removed) {
-            System.out.println("Khách hàng đã bị xóa.");
+            System.out.println("Khach hang da bi xoa.");
         } else {
-            System.out.println("Không tìm thấy khách hàng.");
+            System.out.println("Khong tim thay khach hang.");
         }
     }
 
     public void editCustomerInteractive(Scanner sc, String username) {
         Customer c = getCustomer(username);
         if (c == null) {
-            System.out.println("Không tìm thấy khách hàng.");
+            System.out.println("Khong tim thay khach hang.");
             return;
         }
 
-        System.out.print("Tên mới (enter để giữ nguyên): ");
+        System.out.print("Ten moi (enter de giu nguyen): ");
         String name = sc.nextLine();
         if (!name.isEmpty())
             c.setFullName(name);
 
-        System.out.print("SĐT mới (enter để giữ nguyên): ");
+        System.out.print("SDT moi (enter de giu nguyen): ");
         String phone = sc.nextLine();
         if (!phone.isEmpty())
             c.setPhoneNumber(phone);
 
-        System.out.print("Email mới (enter để giữ nguyên): ");
+        System.out.print("Email mới (enter de giu nguyen): ");
         String email = sc.nextLine();
         if (!email.isEmpty())
             c.setEmail(email);
 
-        System.out.print("Địa chỉ mới (enter để giữ nguyên): ");
+        System.out.print("Dia chi moi (enter de giu nguyen): ");
         String address = sc.nextLine();
         if (!address.isEmpty())
             c.setAddress(address);
 
-        System.out.println("Cập nhật thông tin thành công.");
+        System.out.println("Cap nhat thong tin thanh cong.");
     }
 
     public boolean exists(String username) {
