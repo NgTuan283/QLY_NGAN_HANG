@@ -4,7 +4,7 @@ import java.sql.*;
 public class CustomerManager {
 
     public void addCustomer(Customer c) {
-        try (Connection conn = DatabaseConnection.getConnection()) {
+        try (Connection conn = DatabaseConnection1.getConnection()) {
             String sql = "INSERT INTO Customer (username, password, fullName, phoneNumber, email, address, createdTime) VALUES (?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             stmt.setString(1, c.getUsername());
@@ -27,7 +27,7 @@ public class CustomerManager {
     }
 
     public void listCustomers() {
-        try (Connection conn = DatabaseConnection.getConnection()) {
+        try (Connection conn = DatabaseConnection1.getConnection()) {
             String sql = "SELECT * FROM Customer";
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
@@ -49,7 +49,7 @@ public class CustomerManager {
     }
 
     public void removeCustomer(String username) {
-        try (Connection conn = DatabaseConnection.getConnection()) {
+        try (Connection conn = DatabaseConnection1.getConnection()) {
             String sql = "DELETE FROM Customer WHERE username = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, username);
@@ -65,7 +65,7 @@ public class CustomerManager {
     }
 
     public void editCustomerInteractive(Scanner sc, String username) {
-        try (Connection conn = DatabaseConnection.getConnection()) {
+        try (Connection conn = DatabaseConnection1.getConnection()) {
             Customer c = getCustomer(username);
             if (c == null) {
                 System.out.println("Khong tim thay khach hang.");
@@ -108,7 +108,7 @@ public class CustomerManager {
     }
 
     public boolean exists(String username) {
-        try (Connection conn = DatabaseConnection.getConnection()) {
+        try (Connection conn = DatabaseConnection1.getConnection()) {
             String sql = "SELECT COUNT(*) FROM Customer WHERE username = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, username);
@@ -122,7 +122,7 @@ public class CustomerManager {
     }
 
     public Customer getCustomer(String username) {
-        try (Connection conn = DatabaseConnection.getConnection()) {
+        try (Connection conn = DatabaseConnection1.getConnection()) {
             String sql = "SELECT * FROM Customer WHERE username = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, username);
