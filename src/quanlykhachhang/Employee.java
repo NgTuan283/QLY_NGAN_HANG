@@ -1,4 +1,3 @@
-package quanlykhachhang;
 public class Employee extends User {
     public Employee(String username, String password, String fullName) {
         super(username, password, fullName);
@@ -6,6 +5,6 @@ public class Employee extends User {
 
     @Override
     public String toString() {
-        return "Employee: " + fullName + " (" + userName + ")";
+        return "Employee: " + fullName + " (" + username + ")";
     }
 }

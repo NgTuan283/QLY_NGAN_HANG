@@ -1,21 +1,16 @@
-package quanlykhachhang;
 public abstract class User {
-    protected String userName;
+    protected String username;
     protected String password;
     protected String fullName;
 
-    public User(String userName, String password, String fullName) {
-        this.userName = userName;
+    public User(String username, String password, String fullName) {
+        this.username = username;
         this.password = password;
         this.fullName = fullName;
     }
 
-    public String getUserName() {
-        return userName;
-    }
-
-    public String getPassword(){
-        return password;
+    public String getUsername() {
+        return username;
     }
 
     public boolean login(String inputPass) {
