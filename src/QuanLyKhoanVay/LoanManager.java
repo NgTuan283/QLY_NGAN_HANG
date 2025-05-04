@@ -1,10 +1,10 @@
-package QuanLyKhoanVay;
+
 
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class LoanManager {
+public class LoanManager extends Menu {
     public class Loan {
         private String loanID;
         private String accountID;
@@ -57,64 +57,58 @@ public class LoanManager {
         }
     }
 
-    private Scanner scanner;
     private TransactionHistory transactionService;
 
     public LoanManager(TransactionHistory transactionService) {
-        this.scanner = new Scanner(System.in);
+        super(new String[] {
+            "QUAN LY KHOAN VAY",
+            "CHUC NANG KHOAN VAY",
+            "Tao khoan vay moi",
+            "Cap nhat khoan vay",
+            "Xoa khoan vay",
+            "Xem danh sach khoan vay",
+            "Thanh toan khoan vay",
+            "Quay lai"
+        });
         this.transactionService = transactionService;
     }
 
-    public void manageLoans() {
-        while (true) {
-            System.out.println("\n=== QUAN LY KHOAN VAY ===");
-            System.out.println("1. Tao khoan vay moi");
-            System.out.println("2. Cap nhat khoan vay");
-            System.out.println("3. Xoa khoan vay");
-            System.out.println("4. Xem danh sach khoan vay");
-            System.out.println("5. Thanh toan khoan vay");
-            System.out.println("0. Quay lai");
-            System.out.print("Lua chon: ");
-
-            String choice = scanner.nextLine();
-
-            switch (choice) {
-                case "1":
-                    createNewLoan();
-                    break;
-                case "2":
-                    updateLoan();
-                    break;
-                case "3":
-                    deleteLoan();
-                    break;
-                case "4":
-                    viewLoanList();
-                    break;
-                case "5":
-                    makeLoanPayment();
-                    break;
-                case "0":
-                    return;
-                default:
-                    System.out.println("Lua chon khong hop le");
-            }
+    @Override
+    public void execute(int n) {
+        switch (n) {
+            case 1:
+                createNewLoan();
+                break;
+            case 2:
+                updateLoan();
+                break;
+            case 3:
+                deleteLoan();
+                break;
+            case 4:
+                viewLoanList();
+                break;
+            case 5:
+                makeLoanPayment();
+                break;
+            case 6:
+            throw new MenuExitException();
         }
     }
 
     private void createNewLoan() {
         System.out.println("\n=== TAO KHOAN VAY MOI ===");
         System.out.print("Nhap so tai khoan: ");
-        String accountID = scanner.nextLine();
+        String accountID = sc.nextLine();
 
         System.out.print("Nhap so tien vay (VND): ");
-        double amount = Double.parseDouble(scanner.nextLine());
+        double amount = Double.parseDouble(sc.nextLine());
 
         System.out.print("Nhap lai suat (%/Thang): ");
-        double interestRate = Double.parseDouble(scanner.nextLine()) / 100;
+        double interestRate = Double.parseDouble(sc.nextLine()) / 100;
 
         System.out.print("Nhap ky han (thang): ");
-        int term = Integer.parseInt(scanner.nextLine());
+        int term = Integer.parseInt(sc.nextLine());
 
         String loanID = "LOAN" + String.format("%03d", getNextLoanID());
         Loan newLoan = new Loan(loanID, accountID, amount, interestRate, term);
@@ -141,7 +135,7 @@ public class LoanManager {
     private void updateLoan() {
         System.out.println("\n=== CAP NHAT KHOAN VAY ===");
         System.out.print("Nhap ma khoan vay: ");
-        String loanID = scanner.nextLine();
+        String loanID = sc.nextLine();
 
         try {
             Loan loan = DatabaseHelper.getLoanByID(loanID);
@@ -154,7 +148,7 @@ public class LoanManager {
             System.out.println(loan);
 
             System.out.print("Nhap so tien moi (VND) (bo qua de giu nguyen): ");
-            String newAmount = scanner.nextLine();
+            String newAmount = sc.nextLine();
             if (!newAmount.isEmpty()) {
                 double amount = Double.parseDouble(newAmount);
                 loan.setLoanAmount(amount);
@@ -162,7 +156,7 @@ public class LoanManager {
             }
 
             System.out.print("Nhap lai suat moi (%/Thang) (bo qua de giu nguyen): ");
-            String newInterestRate = scanner.nextLine();
+            String newInterestRate = sc.nextLine();
             if (!newInterestRate.isEmpty()) {
                 loan.setInterestRate(Double.parseDouble(newInterestRate) / 100);
             }
@@ -179,7 +173,7 @@ public class LoanManager {
     private void deleteLoan() {
         System.out.println("\n=== XOA KHOAN VAY ===");
         System.out.print("Nhap ma khoan vay can xoa: ");
-        String loanID = scanner.nextLine();
+        String loanID = sc.nextLine();
 
         try {
             DatabaseHelper.deleteLoan(loanID);
@@ -214,7 +208,7 @@ public class LoanManager {
     public void makeLoanPayment() {
         System.out.println("\n=== THANH TOAN KHOAN VAY ===");
         System.out.print("Nhap ma khoan vay: ");
-        String loanId = scanner.nextLine();
+        String loanId = sc.nextLine();
     
         try {
             Loan loan = DatabaseHelper.getLoanByID(loanId);
@@ -227,7 +221,7 @@ public class LoanManager {
             System.out.println(loan);
     
             System.out.print("Nhap so tien thanh toan (VND): ");
-            double amount = Double.parseDouble(scanner.nextLine());
+            double amount = Double.parseDouble(sc.nextLine());
     
             if (amount <= 0) {
                 System.out.println("So tien phai lon hon 0");
@@ -245,10 +239,8 @@ public class LoanManager {
             System.out.printf("Thanh toan thanh cong %,.2f VND\n", amount);
             System.out.printf("So du no con lai: %,.2f VND\n", loan.getRemainingAmount());
     
-            // Không cần tạo transactionID, SQL tự động sinh transactionID
             String transactionType = "Thanh toan khoan vay " + loanId;
             
-            // Thêm giao dịch mới vào cơ sở dữ liệu
             TransactionHistory.Transaction transaction = new TransactionHistory.Transaction(
                 loan.getAccountID(),
                 loan.getLoanID(),
@@ -262,5 +254,5 @@ public class LoanManager {
         } catch (SQLException e) {
             System.out.println("Loi khi thanh toan khoan vay: " + e.getMessage());
         }
-    }    
+    }
 }

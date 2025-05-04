@@ -1,3 +1,4 @@
+package quanlykhachhang;
 import java.util.Scanner;
 
 public class Main {
@@ -48,7 +49,7 @@ public class Main {
         System.out.print("Password: ");
         String p = sc.nextLine();
 
-        if (u.equals(defaultEmp.getUsername()) && defaultEmp.login(p)) {
+        if (u.equals(defaultEmp.getUserName()) && defaultEmp.login(p)) {
             System.out.println("Dang nhap thanh cong: " + defaultEmp.getFullName());
             employeeMenu();
         } else {
@@ -114,7 +115,7 @@ public class Main {
 
         // Hiển thị ID và giờ tạo tài khoản của khách hàng mới
         System.out.println("Them khach hang thanh cong!");
-        System.out.println("ID khach hang: " + newCustomer.getID());
+        System.out.println("ID khach hang: " + newCustomer.getCustomerID());
         System.out.println("Thoi gian tao tai khoan: " + newCustomer.getCreatedTime());
     }
 
@@ -142,7 +143,7 @@ public class Main {
         customerManager.addCustomer(newCustomer);
 
         // Hiển thị ID của khách hàng mới đăng ký
-        System.out.println("Dang ky thanh cong! ID cua ban la: " + newCustomer.getID());
+        System.out.println("Dang ky thanh cong! ID cua ban la: " + newCustomer.getCustomerID());
         System.out.println("Thoi gian tao tai khoan: " + newCustomer.getCreatedTime());
     }
 

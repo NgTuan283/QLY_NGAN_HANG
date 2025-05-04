@@ -1,17 +1,18 @@
+package quanlykhachhang;
 import java.time.LocalDateTime;
 
 public class Customer extends User {
     private static int IDCounter = 1;
-    private int ID;
+    private int customerID;
     private String phoneNumber;
     private String email;
     private String address;
     private LocalDateTime createdTime;
 
-    public Customer(String username, String password, String fullName,
+    public Customer(String userName, String password, String fullName,
             String phoneNumber, String email, String address) {
-        super(username, password, fullName);
-        this.ID = IDCounter++;
+        super(userName, password, fullName);
+        this.customerID = IDCounter++;
         this.phoneNumber = phoneNumber;
         this.email = email;
         this.address = address;
@@ -23,9 +24,9 @@ public class Customer extends User {
     }
 
     public void displayInfo() {
-        System.out.println("ID: " + ID);
+        System.out.println("Ma khach hang: " + customerID);
         System.out.println("Full Name: " + fullName);
-        System.out.println("Username: " + username);
+        System.out.println("Username: " + userName);
         System.out.println("Phone: " + phoneNumber);
         System.out.println("Email: " + email);
         System.out.println("Address: " + address);
@@ -35,7 +36,7 @@ public class Customer extends User {
 
     // Getter & Setter
     public String getUsername() {
-        return username;
+        return userName;
     }
 
     public void setFullName(String fullName) {
@@ -54,8 +55,8 @@ public class Customer extends User {
         this.address = address;
     }
 
-    public int getID() {
-        return ID;
+    public int getCustomerID() {
+        return customerID;
     }
 
     public String getEmail() {

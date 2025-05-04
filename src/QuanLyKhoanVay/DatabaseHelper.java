@@ -23,19 +23,18 @@ public class DatabaseHelper {
     }
 
     public static void insertTransaction(TransactionHistory.Transaction transaction) throws SQLException {
-        String sql = "INSERT INTO Transactions (transactionID, accountID, loanID, amount, transactionType, transactionTime, descriptions) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Transactions ( accountID, loanID, amount, transactionType, transactionTime, descriptions) " +
+                     "VALUES (?, ?, ?, ?, ?, ?)";
         
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             
-            ps.setInt(1, transaction.getTransactionID());
-            ps.setString(2, transaction.getAccountID());
-            ps.setString(3, transaction.getLoanID());
-            ps.setDouble(4, transaction.getAmount());
-            ps.setString(5, transaction.getTranctionType());
-            ps.setTimestamp(6, new Timestamp(transaction.gettransactionTime().getTime()));
-            ps.setString(7, transaction.getDescription());
+            ps.setString(1, transaction.getAccountID());
+            ps.setString(2,transaction.getLoanID());
+            ps.setDouble(3, transaction.getAmount());
+            ps.setString(4, transaction.getTranctionType());
+            ps.setTimestamp(5, new Timestamp(transaction.gettransactionTime().getTime()));
+            ps.setString(6, transaction.getDescription());
             
             ps.executeUpdate();
         }

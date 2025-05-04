@@ -89,13 +89,14 @@ public class DatabaseHelper {
     }
 
     public static void insertTransaction(Transaction t) throws SQLException {
-        String sql = "INSERT INTO Transactions (accountID, amount, transactionTime, transactionType, status) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Transactions ( accountID, loanID, amount, transactionType, transactionTime, descriptions) VALUES ( ?, ?, ?, ?, ?, ?)";
         try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, t.getAcc().getAccountID());
-            ps.setDouble(2, t.getamount());
-            ps.setTimestamp(3, new Timestamp(t.gettransactionTime().getTime()));
+            ps.setString(2, t.getLoanID());
+            ps.setDouble(3, t.getamount());
             ps.setString(4, t.gettransactionType());
-            ps.setString(5, t.getDescription());
+            ps.setTimestamp(5, new Timestamp(t.gettransactionTime().getTime()));     
+            ps.setString(6, t.getDescription());
             ps.executeUpdate();
         }
     }
@@ -108,7 +109,7 @@ public class DatabaseHelper {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 Account acc = getAccountByID(id);
-                Transaction t = new Transaction(acc, rs.getDouble("amount"), rs.getString("transactionType"), rs.getString("status"));
+                Transaction t = new Transaction(acc, rs.getDouble("amount"), rs.getString("transactionType"), rs.getString("descriptions"));
                 t.settransactionID(rs.getInt("transactionID"));
                 t.settransactionTime(rs.getTimestamp("transactionTime"));
                 list.add(t);

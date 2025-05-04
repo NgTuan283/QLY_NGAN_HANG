@@ -1,4 +1,4 @@
-package QuanLyKhoanVay;
+
 
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -41,7 +41,7 @@ public class TransactionHistory {
 
 
     public void viewTransactionHistory() {
-        System.out.println("\n=== LICH SU GIAO DICH ===");
+        System.out.println("\n======= LICH SU GIAO DICH =======");
         System.out.print("Nhap so tai khoan: ");
         String accountID = scanner.nextLine();
 
@@ -51,7 +51,7 @@ public class TransactionHistory {
             if (accountTransactions.isEmpty()) {
                 System.out.println("Khong tim thay giao dich nao");
             } else {
-                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy HH:mm:ss");
                 System.out.println("\nLich su giao dich cua " + accountID + ":");
                 
                 for (Transaction t : accountTransactions) {
