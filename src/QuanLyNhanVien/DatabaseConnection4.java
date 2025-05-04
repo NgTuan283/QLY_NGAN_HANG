@@ -6,7 +6,7 @@ import java.util.List;
 
 import QuanLyNhanVien.EmployeeService;
 
-public class DatabaseConnection {
+public class DatabaseConnection4 {
 
     // Cấu hình kết nối với cơ sở dữ liệu
     private static final String URL = "jdbc:mysql://localhost:3306/your_database?useSSL=false"; // Đổi 'your_database' thành tên cơ sở dữ liệu của bạn

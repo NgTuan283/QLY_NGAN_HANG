@@ -123,7 +123,7 @@ public class EmployeeService {
         String username = scanner.nextLine();
 
         // Kiểm tra xem username đã tồn tại chưa
-        if (DatabaseConnection.isUsernameExists(username)) {
+        if (DatabaseConnection4.isUsernameExists(username)) {
             System.out.println("Username da ton tai, vui long chon username khac.");
             return;
         }
@@ -139,7 +139,7 @@ public class EmployeeService {
         String role = scanner.nextLine();
         String employeeId = "EMP" + System.currentTimeMillis();
         Employee employee = new Employee(employeeId, name, username, password, role, java.time.LocalDateTime.now());
-        DatabaseConnection.addEmployee(employee);
+        DatabaseConnection4.addEmployee(employee);
         logService.logEmployeeAction(employeeId, "Them", employeeId);
         System.out.println("Nhan vien da duoc them.");
     }
@@ -149,7 +149,7 @@ public class EmployeeService {
         String employeeId = scanner.nextLine();
     
         // Kiểm tra nhân viên có tồn tại không
-        Employee employeeToUpdate = DatabaseConnection.getEmployeeById(employeeId);
+        Employee employeeToUpdate = DatabaseConnection4.getEmployeeById(employeeId);
         if (employeeToUpdate == null) {
             System.out.println("Khong tim thay nhan vien voi ma nhan vien: " + employeeId);
             return;
@@ -213,7 +213,7 @@ public class EmployeeService {
             }
 
             // Kiểm tra xem username đã tồn tại trong cơ sở dữ liệu không
-            if (DatabaseConnection.isUsernameExists(newUsername)) {
+            if (DatabaseConnection4.isUsernameExists(newUsername)) {
                 System.out.println("Username da ton tai, vui long chon username khac.");
             } else {
                 break;
@@ -244,7 +244,7 @@ public class EmployeeService {
         String employeeId = scanner.nextLine();
     
         // Kiểm tra nhân viên có tồn tại không
-        Employee employeeToDelete = DatabaseConnection.getEmployeeById(employeeId);
+        Employee employeeToDelete = DatabaseConnection4.getEmployeeById(employeeId);
         if (employeeToDelete == null) {
             System.out.println("Khong tim thay nhan vien voi ma nhan vien: " + employeeId);
             return;
@@ -279,7 +279,7 @@ public class EmployeeService {
     private void showAllEmployees() {
         // Gọi phương thức loadEmployees() để đảm bảo danh sách nhân viên được cập nhật
     
-        List<Employee> employees = DatabaseConnection.getAllEmployees();
+        List<Employee> employees = DatabaseConnection4.getAllEmployees();
         if (employees.isEmpty()) {
             System.out.println("Danh sach nhan vien hien tai rong.");
         } else {
