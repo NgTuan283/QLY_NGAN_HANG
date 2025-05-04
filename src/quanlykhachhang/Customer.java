@@ -1,3 +1,4 @@
+package quanlykhachhang;
 import java.time.LocalDateTime;
 
 public class Customer extends User {

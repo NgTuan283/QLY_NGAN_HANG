@@ -10,34 +10,33 @@ public class Transaction {
     private String loanID;  // Bổ sung loanID
     private double amount;
     private Date transactionTime;
-    private String transactionType, status;
+    private String transactionType, description;
     private static int count = 1;
 
 
     public Transaction() {
-
-
     }
 
 
-    public Transaction(Account a, double amount, String transactionType, String status) {
+    public Transaction(Account a, double amount, String transactionType, String description) {
+        this.acc = a;
         this.transactionID = count++;
         this.amount = amount;
         this.transactionTime = new Date();
         this.transactionType = transactionType;
-        this.status = status;
+        this.description = description;
     }
-    public Transaction(Account a, double amount, String transactionType, String status, String loanID) {
+    public Transaction(Account a, double amount, String transactionType, String description, String loanID) {
         this.transactionID = count++;
         this.acc = a;
         this.amount = amount;
         this.transactionTime = new Date();
         this.transactionType = transactionType;
-        this.status = status;
+        this.description = description;
         this.loanID = loanID;
     }
 
-    public Transaction(int accountID, String loanID, double amount, String transactionType, String status) {
+    public Transaction(int accountID, String loanID, double amount, String transactionType, String description) {
         this.transactionID = count++;
         this.acc = new Account();  // Giả sử bạn muốn lấy Account từ ID
         this.acc.setAccountID(accountID);
@@ -45,12 +44,12 @@ public class Transaction {
         this.amount = amount;
         this.transactionTime = new Date();
         this.transactionType = transactionType;
-        this.status = status;
+        this.description = description;
     }
 
     @Override
     public String toString() {
-        return String.format("\n%-5d| %-28s| %-8d| %-15f| %-15s| %-25s",transactionID, transactionTime.toString(), acc.getAccountID(), amount, transactionType, status);
+        return String.format("\n%-5d| %-28s| %-8d| %-15f| %-15s| %-25s",transactionID, transactionTime.toString(), acc.getAccountID(), amount, transactionType, description);
     }
 
 
@@ -65,7 +64,7 @@ public class Transaction {
 
 
     public Account getAcc() {
-        return acc;
+        return this.acc;
     }
 
 
@@ -104,13 +103,13 @@ public class Transaction {
     }
 
 
-    public String getstatus() {
-        return status;
+    public String getDescription() {
+        return description;
     }
 
 
-    public void setstatus(String status) {
-        this.status = status;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
 

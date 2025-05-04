@@ -1,19 +1,16 @@
+package QuanLyKhoanVay;
 import java.util.Scanner;
 
 public class BankingSystem {
     public static void main(String[] args) {
-        LichSuGiaoDich giaoDichService = new LichSuGiaoDich();
-        QuanLyKhoanVay quanLyKhoanVay = new QuanLyKhoanVay(giaoDichService);
+        TransactionHistory transactionService = new TransactionHistory();
+        LoanManager loanManager = new LoanManager(transactionService);
         
-        // Khởi tạo dữ liệu mẫu
-        giaoDichService.khoiTaoDuLieuMau();
-        quanLyKhoanVay.khoiTaoDuLieuMau();
-        
-        // Khởi động hệ thống
-        khoiDongHeThong(giaoDichService, quanLyKhoanVay);
+        // Khoi dong he thong
+        startSystem(transactionService, loanManager);
     }
 
-    public static void khoiDongHeThong(LichSuGiaoDich giaoDichService, QuanLyKhoanVay quanLyKhoanVay) {
+    public static void startSystem(TransactionHistory transactionService, LoanManager loanManager) {
         Scanner scanner = new Scanner(System.in);
         
         while (true) {
@@ -23,14 +20,14 @@ public class BankingSystem {
             System.out.println("0. Thoat");
             System.out.print("Lua chon: ");
 
-            String luaChon = scanner.nextLine();
+            String choice = scanner.nextLine();
 
-            switch (luaChon) {
+            switch (choice) {
                 case "1":
-                    giaoDichService.xemLichSuGiaoDich();
+                    transactionService.viewTransactionHistory();
                     break;
                 case "2":
-                    quanLyKhoanVay.quanLyKhoanVay();
+                    loanManager.manageLoans();
                     break;
                 case "0":
                     System.out.println("Cam on ban da su dung dich vu");

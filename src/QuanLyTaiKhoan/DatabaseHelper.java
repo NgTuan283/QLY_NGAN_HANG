@@ -95,7 +95,7 @@ public class DatabaseHelper {
             ps.setDouble(2, t.getamount());
             ps.setTimestamp(3, new Timestamp(t.gettransactionTime().getTime()));
             ps.setString(4, t.gettransactionType());
-            ps.setString(5, t.getstatus());
+            ps.setString(5, t.getDescription());
             ps.executeUpdate();
         }
     }

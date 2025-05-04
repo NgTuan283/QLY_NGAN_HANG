@@ -9,6 +9,7 @@ public class Account extends Menu {
     private String pin;
     private Double balance;
     private String userName; // Thêm biến userName
+    private String customerID;
 
     static Scanner sc = new Scanner(System.in);
 
@@ -55,25 +56,25 @@ public class Account extends Menu {
         }
     }
 
-    //2.Thay doi ma PIN tai khoan
-    public void doChangePin() {
+    //2.Thay doi userName tai khoan
+    public void doChangeName() {
         while (true) {
             try {
-                System.out.print("Nhap ma tai khoan can doi PIN: ");
+                System.out.print("Nhap ma tai khoan can doi ten: ");
                 int id = Integer.parseInt(sc.nextLine());
                 Account acc = DatabaseHelper.getAccountByID(id);
                 if (acc == null) throw new IllegalArgumentException("Khong tim thay tai khoan!");
-                System.out.print("Nhap PIN moi: ");
-                String newPin = sc.nextLine();
-                System.out.print("Nhap lai PIN moi: ");
-                String confirmPin = sc.nextLine();
-                if (!newPin.equals(confirmPin) || !newPin.matches("\\d{6}")) {
-                    throw new IllegalArgumentException("PIN moi khong hop le hoac khong trung khop!");
+                System.out.print("Nhap ten moi: ");
+                String newName = sc.nextLine();
+                System.out.print("Nhap lai ten moi: ");
+                String confirmName = sc.nextLine();
+                if (!newName.equals(confirmName)) {
+                    throw new IllegalArgumentException("ten moi khong trung khop!");
                 }
-                acc.setPin(newPin);
+                acc.setUserName(newName);
                 DatabaseHelper.updateAccount(acc);
-                DatabaseHelper.insertTransaction(new Transaction(acc, 0, "Doi PIN", "Doi PIN thanh cong"));
-                System.out.println(">>> Doi PIN thanh cong!");
+                DatabaseHelper.insertTransaction(new Transaction(acc, 0, "Doi ten tai khoan", "Doi ten tai khoan thanh cong"));
+                System.out.println(">>> Doi ten tai khoan thanh cong thanh cong!");
                 break;
             } catch (Exception e) {
                 System.out.println("Loi: " + e.getMessage());
@@ -261,7 +262,7 @@ public class Account extends Menu {
     public void execute(int n) {
         switch (n) {
             case 1: doAddAccount(); break;
-            case 2: doChangePin(); break;
+            case 2: doChangeName(); break;
             case 3: doDeleteAccount(); break;
             case 4: doViewAccountList(); break;
             case 5: doDepositToAccount(); break;
@@ -273,12 +274,14 @@ public class Account extends Menu {
         }
     }
 
-    public int getAccountID() { return accountID; }
+    public int getAccountID() { return this.accountID; }
     public void setAccountID(int accountID) { this.accountID = accountID; }
-    public String getPin() { return pin; }
+    public String getPin() { return this.pin; }
     public void setPin(String pin) { this.pin = pin; }
-    public String getUserName() { return userName; }
+    public String getUserName() { return this.userName; }
     public void setUserName(String userName) { this.userName = userName; }
-    public Double getBalance() { return balance; }
+    public Double getBalance() { return this.balance; }
     public void setBalance(Double balance) { this.balance = balance; }
+    public String getCustomerID(){ return customerID; }
+    public void setCustomerID(String customerID){this.customerID = customerID;}
 }

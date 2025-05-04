@@ -1,3 +1,4 @@
+package quanlykhachhang;
 import java.util.Scanner;
 
 public class Main {
