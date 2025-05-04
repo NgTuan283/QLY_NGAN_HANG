@@ -2,8 +2,11 @@ package QuanLyNhanVien;
 
 import java.util.List;
 import java.util.Scanner;
-
-
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 
  class Employee {
@@ -136,7 +139,7 @@ public class EmployeeService {
         String role = scanner.nextLine();
         String employeeId = "EMP" + System.currentTimeMillis();
         Employee employee = new Employee(employeeId, name, username, password, role, java.time.LocalDateTime.now());
-        DatabaseConnection.employees.add(employee);
+        DatabaseConnection.addEmployee(employee);
         logService.logEmployeeAction(employeeId, "Them", employeeId);
         System.out.println("Nhan vien da duoc them.");
     }
@@ -144,21 +147,15 @@ public class EmployeeService {
     private void updateEmployee() {
         System.out.print("Nhap ma nhan vien can cap nhat: ");
         String employeeId = scanner.nextLine();
-        
+    
         // Kiểm tra nhân viên có tồn tại không
-        Employee employeeToUpdate = null;
-        for (Employee emp : DatabaseConnection.employees) {
-            if (emp.getEmployeeId().equals(employeeId)) {
-                employeeToUpdate = emp;
-                break;
-            }
-        }
-        
+        Employee employeeToUpdate = DatabaseConnection.getEmployeeById(employeeId);
         if (employeeToUpdate == null) {
             System.out.println("Khong tim thay nhan vien voi ma nhan vien: " + employeeId);
             return;
         }
     
+        // Yêu cầu nhập mật khẩu cũ để xác nhận
         System.out.print("Nhap mat khau nhan vien de cap nhat: ");
         String password = scanner.nextLine();
     
@@ -168,37 +165,11 @@ public class EmployeeService {
             return;
         }
     
-        // Cập nhật thông tin
-        String newUsername;
-        while (true) {
-            System.out.print("Nhap username moi: ");
-            newUsername = scanner.nextLine();
-    
-            // Kiểm tra username có trùng với username cũ của nhân viên không
-            if (newUsername.equals(employeeToUpdate.getUsername())) {
-                System.out.println("Username moi khong the trung voi username cu.");
-                continue;
-            }
-    
-            // Kiểm tra xem username này đã tồn tại chưa trong hệ thống
-            if (DatabaseConnection.isUsernameExists(newUsername)) {
-                System.out.println("Username da ton tai, vui long chon username khac.");
-            } else {
-                break;  // Nếu username không trùng, thoát khỏi vòng lặp
-            }
-        }
+        // Kiểm tra username mới có trùng không
+        String newUsername = getNewUsername(employeeToUpdate.getUsername());
     
         // Kiểm tra mật khẩu mới có đúng 6 ký tự không
-        String newPassword;
-        while (true) {
-            System.out.print("Nhap mat khau moi (6 ky tu): ");
-            newPassword = scanner.nextLine();
-            if (newPassword.length() == 6) {
-                break;  // Nếu mật khẩu hợp lệ, thoát khỏi vòng lặp
-            } else {
-                System.out.println("Mat khau phai co 6 ky tu. Nhap lai.");
-            }
-        }
+        String newPassword = getNewPassword();
     
         // Cập nhật thông tin khác như tên đầy đủ và vai trò
         System.out.print("Nhap ten moi: ");
@@ -206,35 +177,80 @@ public class EmployeeService {
         System.out.print("Nhap vai tro moi: ");
         String newRole = scanner.nextLine();
     
-        // Cập nhật lại thông tin
-        employeeToUpdate.setUsername(newUsername);
-        employeeToUpdate.setPassword(newPassword);
-        employeeToUpdate.setFullName(newFullName);
-        employeeToUpdate.setRole(newRole);
-    
-        // Lưu lại danh sách đã cập nhật
-        DatabaseConnection.updateEmployee(employeeToUpdate);
+        // Cập nhật lại thông tin trong CSDL
+        updateEmployeeInDatabase(employeeId, newUsername, newPassword, newFullName, newRole);
         System.out.println("Thong tin nhan vien da duoc cap nhat.");
     }
+
+    private void updateEmployeeInDatabase(String employeeId, String newUsername, String newPassword, String newFullName, String newRole) {
+        String query = "UPDATE Employee SET username = ?, password = ?, full_name = ?, role = ? WHERE employee_id = ?";
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/your_database", "root", "123456");
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, newUsername);
+            stmt.setString(2, newPassword);
+            stmt.setString(3, newFullName);
+            stmt.setString(4, newRole);
+            stmt.setString(5, employeeId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    
+
+    private String getNewUsername(String currentUsername) {
+        String newUsername;
+        while (true) {
+            System.out.print("Nhap username moi: ");
+            newUsername = scanner.nextLine();
+
+            // Kiểm tra username có trùng với username cũ
+            if (newUsername.equals(currentUsername)) {
+                System.out.println("Username moi khong the trung voi username cu.");
+                continue;
+            }
+
+            // Kiểm tra xem username đã tồn tại trong cơ sở dữ liệu không
+            if (DatabaseConnection.isUsernameExists(newUsername)) {
+                System.out.println("Username da ton tai, vui long chon username khac.");
+            } else {
+                break;
+            }
+        }
+        return newUsername;
+    }
+
+    
+
+    private String getNewPassword() {
+        String newPassword;
+        while (true) {
+            System.out.print("Nhap mat khau moi (6 ky tu): ");
+            newPassword = scanner.nextLine();
+            if (newPassword.length() == 6) {
+                break;
+            } else {
+                System.out.println("Mat khau phai co 6 ky tu. Nhap lai.");
+            }
+        }
+        return newPassword;
+    }
+
 
     private void deleteEmployee() {
         System.out.print("Nhap ma nhan vien can xoa: ");
         String employeeId = scanner.nextLine();
-        
+    
         // Kiểm tra nhân viên có tồn tại không
-        Employee employeeToDelete = null;
-        for (Employee emp : DatabaseConnection.employees) {
-            if (emp.getEmployeeId().equals(employeeId)) {
-                employeeToDelete = emp;
-                break;
-            }
-        }
-        
+        Employee employeeToDelete = DatabaseConnection.getEmployeeById(employeeId);
         if (employeeToDelete == null) {
             System.out.println("Khong tim thay nhan vien voi ma nhan vien: " + employeeId);
             return;
         }
     
+        // Yêu cầu nhập mật khẩu để xác nhận xóa
         System.out.print("Nhap mat khau nhan vien de xoa: ");
         String password = scanner.nextLine();
     
@@ -244,9 +260,20 @@ public class EmployeeService {
             return;
         }
     
-        // Xóa nhân viên
-        DatabaseConnection.deleteEmployee(employeeId);
+        // Xóa nhân viên khỏi cơ sở dữ liệu
+        deleteEmployeeFromDatabase(employeeId);
         System.out.println("Nhan vien da duoc xoa.");
+    }
+    
+    private void deleteEmployeeFromDatabase(String employeeId) {
+        String query = "DELETE FROM Employee WHERE employee_id = ?";
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/your_database", "root", "123456");
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, employeeId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     private void showAllEmployees() {

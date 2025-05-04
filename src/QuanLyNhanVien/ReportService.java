@@ -1,6 +1,10 @@
 package QuanLyNhanVien;
 
+import java.sql.*;
+
 public class ReportService {
+
+    // Hiển thị menu báo cáo
     public void displayMenu() {
         System.out.println("\n=========== MENU BAO CÁO ===========");
         System.out.println("1. Thong ke so giao dich");
@@ -9,43 +13,54 @@ public class ReportService {
         System.out.print("Chon chuc nang: ");
     }
 
-    public void execute(int int1) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'execute'");
+    // Thực thi chức năng báo cáo dựa trên lựa chọn
+    public void execute(int choice) {
+        switch (choice) {
+            case 1:
+                showTotalTransactions();
+                break;
+            case 2:
+                showTotalLoans();
+                break;
+            case 0:
+                System.out.println("Thoat ra menu chinh.");
+                break;
+            default:
+                System.out.println("Lua chon khong hop le.");
+        }
     }
 
-    // public void execute(int choice) {
-    //     switch (choice) {
-    //         case 1:
-    //             showTotalTransactions();
-    //             break;
-    //         case 2:
-    //             showTotalLoans();
-    //             break;
-    //         case 0:
-    //             System.out.println("Thoat ra menu chinh.");
-    //             break;
-    //         default:
-    //             System.out.println("Lua chon khong hop le.");
-    //     }
-    // }
+    // Báo cáo tổng số giao dịch
+    private void showTotalTransactions() {
+        int totalTransactions = count("Transaction");
+        System.out.println("Tong so giao dich: " + totalTransactions);
+    }
 
-    // private void showTotalTransactions() {
-    //     int totalTransactions = count("Transaction");
-    //     System.out.println("Tong so giao dich: " + totalTransactions);
-    // }
+    // Báo cáo tổng số khoản vay
+    private void showTotalLoans() {
+        int totalLoans = count("Loan");
+        System.out.println("Tong so khoan vay: " + totalLoans);
+    }
 
-    // private void showTotalLoans() {
-    //     int totalLoans = count("Loan");
-    //     System.out.println("Tong so khoan vay: " + totalLoans);
-    // }
+    // Đếm số lượng giao dịch hoặc khoản vay từ cơ sở dữ liệu
+    private int count(String table) {
+        String query = "";
+        if (table.equals("Transaction")) {
+            query = "SELECT COUNT(*) FROM Transaction";
+        } else if (table.equals("Loan")) {
+            query = "SELECT COUNT(*) FROM Loan";
+        }
 
-    // private int count(String table) {
-    //     if (table.equals("Transaction")) {
-    //         return DatabaseConnection.transactions.size(); // Giả sử bạn có danh sách các giao dịch
-    //     } else if (table.equals("Loan")) {
-    //         return DatabaseConnection.loans.size(); // Giả sử bạn có danh sách các khoản vay
-    //     }
-    //     return 0;
-    // }
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/your_database", "root", "123456");
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+
+            if (rs.next()) {
+                return rs.getInt(1);  // Trả về số lượng
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;  // Trả về 0 nếu không tìm thấy dữ liệu
+    }
 }
