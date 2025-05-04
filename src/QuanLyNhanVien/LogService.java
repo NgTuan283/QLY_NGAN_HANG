@@ -97,7 +97,7 @@ public class LogService {
     }
 
     private void showAllLogs() {
-        List<Log> logs = DatabaseConnection.getLogsByEmployeeId("all");
+        List<Log> logs = DatabaseConnection4.getLogsByEmployeeId("all");
         logs.forEach(log -> System.out.println(log.getLogId() + " | " + log.getAction() + " | " + log.getTargetId()));
     }
 
@@ -109,11 +109,11 @@ public class LogService {
     }
 
     private List<Log> getLogsByEmployeeId(String employeeId) {
-        return DatabaseConnection.getLogsByEmployeeId(employeeId);
+        return DatabaseConnection4.getLogsByEmployeeId(employeeId);
     }
 
     public void logEmployeeAction(String employeeId, String action, String targetId) {
         Log log = new Log("LOG" + System.currentTimeMillis(), employeeId, action, "Employee", targetId, java.time.LocalDateTime.now());
-        DatabaseConnection.addLog(log);
+        DatabaseConnection4.addLog(log);
     }
 }
