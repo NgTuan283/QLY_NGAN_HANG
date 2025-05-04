@@ -31,11 +31,11 @@ public class DatabaseHelper {
             
             ps.setInt(1, transaction.getTransactionID());
             ps.setString(2, transaction.getAccountID());
-            ps.setString(4, transaction.getLoanID());
-            ps.setDouble(5, transaction.getAmount());
-            ps.setString(6, transaction.getTranctionType());
-            ps.setTimestamp(7, new Timestamp(transaction.gettransactionTime().getTime()));
-            ps.setString(8, transaction.getDescription());
+            ps.setString(3, transaction.getLoanID());
+            ps.setDouble(4, transaction.getAmount());
+            ps.setString(5, transaction.getTranctionType());
+            ps.setTimestamp(6, new Timestamp(transaction.gettransactionTime().getTime()));
+            ps.setString(7, transaction.getDescription());
             
             ps.executeUpdate();
         }
@@ -68,7 +68,7 @@ public class DatabaseHelper {
     }
 
     public static void insertLoan(LoanManager.Loan loan) throws SQLException {
-        String sql = "INSERT INTO Loans (loanID, accountID, loanAmount, interestRate, term, creationDate, remainingAmount) " +
+        String sql = "INSERT INTO Loan (loanID, accountID, loanAmount, interestRate, term, creationDate, remainingAmount) " +
                      "VALUES (?, ?, ?, ?, ?, ?, ?)";
         
         try (Connection conn = getConnection();
@@ -86,7 +86,7 @@ public class DatabaseHelper {
     }
 
     public static void updateLoan(LoanManager.Loan loan) throws SQLException {
-        String sql = "UPDATE Loans SET loanAmount = ?, interestRate = ?, term = ?, remainingAmount = ? " +
+        String sql = "UPDATE Loan SET loanAmount = ?, interestRate = ?, term = ?, remainingAmount = ? " +
                      "WHERE loanID = ?";
         
         try (Connection conn = getConnection();
@@ -103,7 +103,7 @@ public class DatabaseHelper {
     }
 
     public static void deleteLoan(String loanID) throws SQLException {
-        String sql = "DELETE FROM Loans WHERE loanID = ?";
+        String sql = "DELETE FROM Loan WHERE loanID = ?";
         
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -113,9 +113,9 @@ public class DatabaseHelper {
         }
     }
 
-    public static List<LoanManager.Loan> getAllLoans() throws SQLException {
-        List<LoanManager.Loan> loans = new ArrayList<>();
-        String sql = "SELECT * FROM Loans";
+    public static List<LoanManager.Loan> getAllLoan() throws SQLException {
+        List<LoanManager.Loan> Loan = new ArrayList<>();
+        String sql = "SELECT * FROM Loan";
         
         try (Connection conn = getConnection();
              Statement stmt = conn.createStatement();
@@ -131,14 +131,14 @@ public class DatabaseHelper {
                     rs.getInt("term")
                 );
                 loan.setRemainingAmount(rs.getDouble("remainingAmount"));
-                loans.add(loan);
+                Loan.add(loan);
             }
         }
-        return loans;
+        return Loan;
     }
 
     public static LoanManager.Loan getLoanByID(String loanID) throws SQLException {
-        String sql = "SELECT * FROM Loans WHERE loanID = ?";
+        String sql = "SELECT * FROM Loan WHERE loanID = ?";
         
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {

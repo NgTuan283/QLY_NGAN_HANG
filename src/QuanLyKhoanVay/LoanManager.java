@@ -1,21 +1,24 @@
+package QuanLyKhoanVay;
+
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class LoanManager {
     public class Loan {
-        private String loanId;
-        private String accountNumber;
+        private String loanID;
+        private String accountID;
+        private String customerID;
         private double loanAmount;
         private double interestRate;
         private int term;
         private Date creationDate;
         private double remainingAmount;
 
-        public Loan(String loanId, String accountNumber, double loanAmount, 
+        public Loan(String loanID, String accountID, double loanAmount, 
                    double interestRate, int term) {
-            this.loanId = loanId;
-            this.accountNumber = accountNumber;
+            this.loanID = loanID;
+            this.accountID = accountID;
             this.loanAmount = loanAmount;
             this.interestRate = interestRate;
             this.term = term;
@@ -23,8 +26,21 @@ public class LoanManager {
             this.remainingAmount = loanAmount;
         }
 
-        public String getLoanId() { return loanId; }
-        public String getAccountNumber() { return accountNumber; }
+        public Loan(String loanID, String accountID, String customerID, double loanAmount, 
+                   double interestRate, int term) {
+            this.loanID = loanID;
+            this.accountID = accountID;
+            this.customerID = customerID;
+            this.loanAmount = loanAmount;
+            this.interestRate = interestRate;
+            this.term = term;
+            this.creationDate = new Date();
+            this.remainingAmount = loanAmount;
+        }
+
+        public String getLoanID() { return loanID; }
+        public String getAccountID() { return accountID; }
+        public String getCustomerID(){ return customerID; }
         public double getLoanAmount() { return loanAmount; }
         public void setLoanAmount(double loanAmount) { this.loanAmount = loanAmount; }
         public double getInterestRate() { return interestRate; }
@@ -36,8 +52,8 @@ public class LoanManager {
 
         @Override
         public String toString() {
-            return String.format("Khoản vay %s - Tài khoản: %s\nSố tiền: %,.2f - Còn nợ: %,.2f\nLãi suất: %.1f%% - Kỳ hạn: %d tháng",
-                    loanId, accountNumber, loanAmount, remainingAmount, interestRate * 100, term);
+            return String.format("Khoan vay %s - Tai khoan: %s\nSo tien: %,.2f - Con no: %,.2f\nLai suat: %.1f%% - Ky han: %d thang",
+                    loanID, accountID, loanAmount, remainingAmount, interestRate * 100, term);
         }
     }
 
@@ -49,24 +65,16 @@ public class LoanManager {
         this.transactionService = transactionService;
     }
 
-    public void initializeSampleData() {
-        try {
-            DatabaseHelper.initializeSampleData();
-        } catch (SQLException e) {
-            System.out.println("Lỗi khi khởi tạo dữ liệu mẫu: " + e.getMessage());
-        }
-    }
-
     public void manageLoans() {
         while (true) {
-            System.out.println("\n=== QUẢN LÝ KHOẢN VAY ===");
-            System.out.println("1. Tạo khoản vay mới");
-            System.out.println("2. Cập nhật khoản vay");
-            System.out.println("3. Xóa khoản vay");
-            System.out.println("4. Xem danh sách khoản vay");
-            System.out.println("5. Thanh toán khoản vay");
-            System.out.println("0. Quay lại");
-            System.out.print("Lựa chọn: ");
+            System.out.println("\n=== QUAN LY KHOAN VAY ===");
+            System.out.println("1. Tao khoan vay moi");
+            System.out.println("2. Cap nhat khoan vay");
+            System.out.println("3. Xoa khoan vay");
+            System.out.println("4. Xem danh sach khoan vay");
+            System.out.println("5. Thanh toan khoan vay");
+            System.out.println("0. Quay lai");
+            System.out.print("Lua chon: ");
 
             String choice = scanner.nextLine();
 
@@ -89,63 +97,63 @@ public class LoanManager {
                 case "0":
                     return;
                 default:
-                    System.out.println("Lựa chọn không hợp lệ");
+                    System.out.println("Lua chon khong hop le");
             }
         }
     }
 
     private void createNewLoan() {
-        System.out.println("\n=== TẠO KHOẢN VAY MỚI ===");
-        System.out.print("Nhập số tài khoản: ");
-        String accountNumber = scanner.nextLine();
+        System.out.println("\n=== TAO KHOAN VAY MOI ===");
+        System.out.print("Nhap so tai khoan: ");
+        String accountID = scanner.nextLine();
 
-        System.out.print("Nhập số tiền vay (VND): ");
+        System.out.print("Nhap so tien vay (VND): ");
         double amount = Double.parseDouble(scanner.nextLine());
 
-        System.out.print("Nhập lãi suất (%/Tháng): ");
+        System.out.print("Nhap lai suat (%/Thang): ");
         double interestRate = Double.parseDouble(scanner.nextLine()) / 100;
 
-        System.out.print("Nhập kỳ hạn (tháng): ");
+        System.out.print("Nhap ky han (thang): ");
         int term = Integer.parseInt(scanner.nextLine());
 
-        String loanId = "LOAN" + String.format("%03d", getNextLoanId());
-        Loan newLoan = new Loan(loanId, accountNumber, amount, interestRate, term);
+        String loanID = "LOAN" + String.format("%03d", getNextLoanID());
+        Loan newLoan = new Loan(loanID, accountID, amount, interestRate, term);
         
         try {
             DatabaseHelper.insertLoan(newLoan);
-            System.out.println("Tạo khoản vay thành công");
+            System.out.println("Tao khoan vay thanh cong");
             System.out.println(newLoan);
         } catch (SQLException e) {
-            System.out.println("Lỗi khi tạo khoản vay: " + e.getMessage());
+            System.out.println("Loi khi tao khoan vay: " + e.getMessage());
         }
     }
 
-    private int getNextLoanId() {
+    private int getNextLoanID() {
         try {
-            List<Loan> loans = DatabaseHelper.getAllLoans();
+            List<Loan> loans = DatabaseHelper.getAllLoan();
             return loans.size() + 1;
         } catch (SQLException e) {
-            System.out.println("Lỗi khi lấy danh sách khoản vay: " + e.getMessage());
+            System.out.println("Loi khi lay danh sach khoan vay: " + e.getMessage());
             return 1;
         }
     }
 
     private void updateLoan() {
-        System.out.println("\n=== CẬP NHẬT KHOẢN VAY ===");
-        System.out.print("Nhập mã khoản vay: ");
-        String loanId = scanner.nextLine();
+        System.out.println("\n=== CAP NHAT KHOAN VAY ===");
+        System.out.print("Nhap ma khoan vay: ");
+        String loanID = scanner.nextLine();
 
         try {
-            Loan loan = DatabaseHelper.getLoanById(loanId);
+            Loan loan = DatabaseHelper.getLoanByID(loanID);
             if (loan == null) {
-                System.out.println("Không tìm thấy khoản vay");
+                System.out.println("Khong tim thay khoan vay");
                 return;
             }
 
-            System.out.println("Thông tin hiện tại:");
+            System.out.println("Thong tin hien tai:");
             System.out.println(loan);
 
-            System.out.print("Nhập số tiền mới (VND) (bỏ qua để giữ nguyên): ");
+            System.out.print("Nhap so tien moi (VND) (bo qua de giu nguyen): ");
             String newAmount = scanner.nextLine();
             if (!newAmount.isEmpty()) {
                 double amount = Double.parseDouble(newAmount);
@@ -153,98 +161,106 @@ public class LoanManager {
                 loan.setRemainingAmount(amount);
             }
 
-            System.out.print("Nhập lãi suất mới (%/Tháng) (bỏ qua để giữ nguyên): ");
+            System.out.print("Nhap lai suat moi (%/Thang) (bo qua de giu nguyen): ");
             String newInterestRate = scanner.nextLine();
             if (!newInterestRate.isEmpty()) {
                 loan.setInterestRate(Double.parseDouble(newInterestRate) / 100);
             }
 
             DatabaseHelper.updateLoan(loan);
-            System.out.println("Cập nhật thành công");
-            System.out.println("Thông tin mới:");
+            System.out.println("Cap nhat thanh cong");
+            System.out.println("Thong tin moi:");
             System.out.println(loan);
         } catch (SQLException e) {
-            System.out.println("Lỗi khi cập nhật khoản vay: " + e.getMessage());
+            System.out.println("Loi khi cap nhat khoan vay: " + e.getMessage());
         }
     }
 
     private void deleteLoan() {
-        System.out.println("\n=== XÓA KHOẢN VAY ===");
-        System.out.print("Nhập mã khoản vay cần xóa: ");
-        String loanId = scanner.nextLine();
+        System.out.println("\n=== XOA KHOAN VAY ===");
+        System.out.print("Nhap ma khoan vay can xoa: ");
+        String loanID = scanner.nextLine();
 
         try {
-            DatabaseHelper.deleteLoan(loanId);
-            System.out.println("Đã xóa khoản vay " + loanId);
+            DatabaseHelper.deleteLoan(loanID);
+            System.out.println("Da xoa khoan vay " + loanID);
         } catch (SQLException e) {
-            System.out.println("Lỗi khi xóa khoản vay: " + e.getMessage());
+            System.out.println("Loi khi xoa khoan vay: " + e.getMessage());
         }
     }
 
     private void viewLoanList() {
         try {
-            List<Loan> loanList = DatabaseHelper.getAllLoans();
+            List<Loan> loanList = DatabaseHelper.getAllLoan();
             
             if (loanList.isEmpty()) {
-                System.out.println("Không có khoản vay nào");
+                System.out.println("Khong co khoan vay nao");
                 return;
             }
 
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-            System.out.println("\n=== DANH SÁCH KHOẢN VAY ===");
+            System.out.println("\n=== DANH SACH KHOAN VAY ===");
             for (Loan loan : loanList) {
-                System.out.printf("%s - Tài khoản: %s - Số tiền: %,.2f - Còn nợ: %,.2f - Lãi suất: %.1f%% - Kỳ hạn: %d tháng - Ngày tạo: %s\n",
-                        loan.getLoanId(), loan.getAccountNumber(), loan.getLoanAmount(), 
+                System.out.printf("%s - Tai khoan: %s - So tien: %,.2f - Con no: %,.2f - Lai suat: %.1f%% - Ky han: %d thang - Ngay tao: %s\n",
+                        loan.getLoanID(), loan.getAccountID(), loan.getLoanAmount(), 
                         loan.getRemainingAmount(), loan.getInterestRate() * 100,
                         loan.getTerm(), dateFormat.format(loan.getCreationDate()));
             }
         } catch (SQLException e) {
-            System.out.println("Lỗi khi lấy danh sách khoản vay: " + e.getMessage());
+            System.out.println("Loi khi lay danh sach khoan vay: " + e.getMessage());
         }
     }
 
-    private void makeLoanPayment() {
-        System.out.println("\n=== THANH TOÁN KHOẢN VAY ===");
-        System.out.print("Nhập mã khoản vay: ");
+    public void makeLoanPayment() {
+        System.out.println("\n=== THANH TOAN KHOAN VAY ===");
+        System.out.print("Nhap ma khoan vay: ");
         String loanId = scanner.nextLine();
-
+    
         try {
-            Loan loan = DatabaseHelper.getLoanById(loanId);
+            Loan loan = DatabaseHelper.getLoanByID(loanId);
             if (loan == null) {
-                System.out.println("Không tìm thấy khoản vay");
+                System.out.println("Khong tim thay khoan vay");
                 return;
             }
-
-            System.out.println("Thông tin khoản vay:");
+    
+            System.out.println("Thong tin khoan vay:");
             System.out.println(loan);
-
-            System.out.print("Nhập số tiền thanh toán (VND): ");
+    
+            System.out.print("Nhap so tien thanh toan (VND): ");
             double amount = Double.parseDouble(scanner.nextLine());
-
+    
             if (amount <= 0) {
-                System.out.println("Số tiền phải lớn hơn 0");
+                System.out.println("So tien phai lon hon 0");
                 return;
             }
-
+    
             if (amount > loan.getRemainingAmount()) {
-                System.out.println("Số tiền vượt quá số dư nợ");
+                System.out.println("So tien vuot qua so du no");
                 return;
             }
-
+    
             loan.setRemainingAmount(loan.getRemainingAmount() - amount);
             DatabaseHelper.updateLoan(loan);
             
-            System.out.printf("Thanh toán thành công %,.2f VND\n", amount);
-            System.out.printf("Số dư nợ còn lại: %,.2f VND\n", loan.getRemainingAmount());
-
-            String transactionId = "TXN" + (transactionService.getTransactions().size() + 1);
-            transactionService.addTransaction(new TransactionHistory.Transaction(
-                transactionId, loan.getAccountNumber(), "NGÂN HÀNG", 
-                loanId, amount, new Date(), 
-                "Thanh toán khoản vay " + loanId
-            ));
+            System.out.printf("Thanh toan thanh cong %,.2f VND\n", amount);
+            System.out.printf("So du no con lai: %,.2f VND\n", loan.getRemainingAmount());
+    
+            // Không cần tạo transactionID, SQL tự động sinh transactionID
+            String transactionType = "Thanh toan khoan vay " + loanId;
+            
+            // Thêm giao dịch mới vào cơ sở dữ liệu
+            TransactionHistory.Transaction transaction = new TransactionHistory.Transaction(
+                loan.getAccountID(),
+                loan.getLoanID(),
+                amount,
+                transactionType,
+                new Date(),
+                "Thanh toan khoan vay thanh cong"
+            );
+    
+            transactionService.addTransaction(transaction);
         } catch (SQLException e) {
-            System.out.println("Lỗi khi thanh toán khoản vay: " + e.getMessage());
+            System.out.println("Loi khi thanh toan khoan vay: " + e.getMessage());
         }
-    }
+    }    
 }
