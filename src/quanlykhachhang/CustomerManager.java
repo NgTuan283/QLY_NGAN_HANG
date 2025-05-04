@@ -1,77 +1,145 @@
-import java.util.ArrayList;
 import java.util.Scanner;
+import java.sql.*;
 
 public class CustomerManager {
-    private ArrayList<Customer> customers = new ArrayList<>();
 
     public void addCustomer(Customer c) {
-        customers.add(c);
-        System.out.println("Khach hang da duoc them thanh cong.");
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            String sql = "INSERT INTO Customer (username, password, fullName, phoneNumber, email, address, createdTime) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            stmt.setString(1, c.getUsername());
+            stmt.setString(2, c.getPassword());
+            stmt.setString(3, c.getFullName());
+            stmt.setString(4, c.getPhoneNumber());
+            stmt.setString(5, c.getEmail());
+            stmt.setString(6, c.getAddress());
+            stmt.setTimestamp(7, Timestamp.valueOf(c.getCreatedTime()));
+
+            stmt.executeUpdate();
+            ResultSet rs = stmt.getGeneratedKeys();
+            if (rs.next()) {
+                System.out.println("ID khach hang: " + rs.getInt(1));
+            }
+            System.out.println("Khach hang da duoc them vao CSDL.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void listCustomers() {
-        if (customers.isEmpty()) {
-            System.out.println("Khong co khach hang.");
-            return;
-        }
-        for (Customer c : customers) {
-            c.displayInfo();
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            String sql = "SELECT * FROM Customer";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                Customer c = new Customer(
+                        rs.getInt("ID"),
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        rs.getString("fullName"),
+                        rs.getString("phoneNumber"),
+                        rs.getString("email"),
+                        rs.getString("address"),
+                        rs.getTimestamp("createdTime").toLocalDateTime());
+                c.displayInfo();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
     public void removeCustomer(String username) {
-        boolean removed = customers.removeIf(c -> c.getUsername().equals(username));
-        if (removed) {
-            System.out.println("Khach hang da bi xoa.");
-        } else {
-            System.out.println("Khong tim thay khach hang.");
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            String sql = "DELETE FROM Customer WHERE username = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1, username);
+            int rows = stmt.executeUpdate();
+            if (rows > 0) {
+                System.out.println("Khach hang da bi xoa.");
+            } else {
+                System.out.println("Khong tim thay khach hang.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
     public void editCustomerInteractive(Scanner sc, String username) {
-        Customer c = getCustomer(username);
-        if (c == null) {
-            System.out.println("Khong tim thay khach hang.");
-            return;
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            Customer c = getCustomer(username);
+            if (c == null) {
+                System.out.println("Khong tim thay khach hang.");
+                return;
+            }
+
+            System.out.print("Ten moi (enter de giu nguyen): ");
+            String name = sc.nextLine();
+            if (!name.isEmpty())
+                c.setFullName(name);
+
+            System.out.print("SDT moi (enter de giu nguyen): ");
+            String phone = sc.nextLine();
+            if (!phone.isEmpty())
+                c.setPhoneNumber(phone);
+
+            System.out.print("Email moi (enter de giu nguyen): ");
+            String email = sc.nextLine();
+            if (!email.isEmpty())
+                c.setEmail(email);
+
+            System.out.print("Dia chi moi (enter de giu nguyen): ");
+            String address = sc.nextLine();
+            if (!address.isEmpty())
+                c.setAddress(address);
+
+            String sql = "UPDATE Customer SET fullName = ?, phoneNumber = ?, email = ?, address = ? WHERE username = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1, c.getFullName());
+            stmt.setString(2, c.getPhoneNumber());
+            stmt.setString(3, c.getEmail());
+            stmt.setString(4, c.getAddress());
+            stmt.setString(5, c.getUsername());
+            stmt.executeUpdate();
+
+            System.out.println("Cap nhat thong tin thanh cong.");
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-
-        System.out.print("Ten moi (enter de giu nguyen): ");
-        String name = sc.nextLine();
-        if (!name.isEmpty())
-            c.setFullName(name);
-
-        System.out.print("SDT moi (enter de giu nguyen): ");
-        String phone = sc.nextLine();
-        if (!phone.isEmpty())
-            c.setPhoneNumber(phone);
-
-        System.out.print("Email mới (enter de giu nguyen): ");
-        String email = sc.nextLine();
-        if (!email.isEmpty())
-            c.setEmail(email);
-
-        System.out.print("Dia chi moi (enter de giu nguyen): ");
-        String address = sc.nextLine();
-        if (!address.isEmpty())
-            c.setAddress(address);
-
-        System.out.println("Cap nhat thong tin thanh cong.");
     }
 
     public boolean exists(String username) {
-        for (Customer c : customers) {
-            if (c.getUsername().equals(username)) {
-                return true;
-            }
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            String sql = "SELECT COUNT(*) FROM Customer WHERE username = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next())
+                return rs.getInt(1) > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return false;
     }
 
     public Customer getCustomer(String username) {
-        for (Customer c : customers) {
-            if (c.getUsername().equals(username)) {
-                return c;
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            String sql = "SELECT * FROM Customer WHERE username = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return new Customer(
+                        rs.getInt("ID"),
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        rs.getString("fullName"),
+                        rs.getString("phoneNumber"),
+                        rs.getString("email"),
+                        rs.getString("address"),
+                        rs.getTimestamp("createdTime").toLocalDateTime());
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return null;
     }
