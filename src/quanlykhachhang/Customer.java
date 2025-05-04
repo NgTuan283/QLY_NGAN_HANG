@@ -1,9 +1,8 @@
-package quanlykhachhang;
 import java.time.LocalDateTime;
 
 public class Customer extends User {
-    private static int idCounter = 1;
-    private int id;
+    private static int IDCounter = 1;
+    private int ID;
     private String phoneNumber;
     private String email;
     private String address;
@@ -12,7 +11,7 @@ public class Customer extends User {
     public Customer(String username, String password, String fullName,
             String phoneNumber, String email, String address) {
         super(username, password, fullName);
-        this.id = idCounter++;
+        this.ID = IDCounter++;
         this.phoneNumber = phoneNumber;
         this.email = email;
         this.address = address;
@@ -24,7 +23,7 @@ public class Customer extends User {
     }
 
     public void displayInfo() {
-        System.out.println("ID: " + id);
+        System.out.println("ID: " + ID);
         System.out.println("Full Name: " + fullName);
         System.out.println("Username: " + username);
         System.out.println("Phone: " + phoneNumber);
@@ -55,8 +54,19 @@ public class Customer extends User {
         this.address = address;
     }
 
-    public int getId() {
-        return id;
+    public int getID() {
+        return ID;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public String getAddress() {
+        return address;
+    }
 }
