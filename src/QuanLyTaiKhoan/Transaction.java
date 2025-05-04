@@ -7,8 +7,9 @@ public class Transaction {
 
     private int transactionID;
     private Account acc;
+    private String loanID;  // Bổ sung loanID
     private double amount;
-    private Date thoiGian;
+    private Date transactionTime;
     private String transactionType, status;
     private static int count = 1;
 
@@ -21,17 +22,35 @@ public class Transaction {
 
     public Transaction(Account a, double amount, String transactionType, String status) {
         this.transactionID = count++;
+        this.amount = amount;
+        this.transactionTime = new Date();
+        this.transactionType = transactionType;
+        this.status = status;
+    }
+    public Transaction(Account a, double amount, String transactionType, String status, String loanID) {
+        this.transactionID = count++;
         this.acc = a;
         this.amount = amount;
-        this.thoiGian = new Date();
+        this.transactionTime = new Date();
+        this.transactionType = transactionType;
+        this.status = status;
+        this.loanID = loanID;
+    }
+
+    public Transaction(int accountID, String loanID, double amount, String transactionType, String status) {
+        this.transactionID = count++;
+        this.acc = new Account();  // Giả sử bạn muốn lấy Account từ ID
+        this.acc.setAccountID(accountID);
+        this.loanID = loanID;
+        this.amount = amount;
+        this.transactionTime = new Date();
         this.transactionType = transactionType;
         this.status = status;
     }
 
-
     @Override
     public String toString() {
-        return String.format("\n%-5d| %-28s| %-8d| %-15f| %-15s| %-25s",transactionID, thoiGian.toString(), acc.getAccountID(), amount, transactionType, status);
+        return String.format("\n%-5d| %-28s| %-8d| %-15f| %-15s| %-25s",transactionID, transactionTime.toString(), acc.getAccountID(), amount, transactionType, status);
     }
 
 
@@ -65,13 +84,13 @@ public class Transaction {
     }
 
 
-    public Date getThoiGian() {
-        return thoiGian;
+    public Date gettransactionTime() {
+        return transactionTime;
     }
 
 
-    public void setThoiGian(Date thoiGian) {
-        this.thoiGian = thoiGian;
+    public void settransactionTime(Date transactionTime) {
+        this.transactionTime = transactionTime;
     }
 
 
@@ -104,7 +123,11 @@ public class Transaction {
         Transaction.count = count;
     }
 
+    public String getLoanID() {
+        return loanID;
+    }
 
+    public void setLoanID(String loanID) {
+        this.loanID = loanID;
+    }
 }
-
-

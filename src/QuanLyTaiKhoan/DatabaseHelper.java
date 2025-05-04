@@ -22,13 +22,15 @@ public class DatabaseHelper {
         return DriverManager.getConnection(URL, USER, PASSWORD);
     }
 
+    // Cập nhật phương thức insertAccount để thêm userName
     public static int insertAccount(Account acc) throws SQLException {
-        String sql = "INSERT INTO Account (pin, balance) VALUES (?, ?)";
+        String sql = "INSERT INTO Account (pin, balance, userName) VALUES (?, ?, ?)";
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
     
             ps.setString(1, acc.getPin());
             ps.setDouble(2, acc.getBalance());
+            ps.setString(3, acc.getUserName()); // Thêm userName vào cơ sở dữ liệu
             ps.executeUpdate();
     
             ResultSet rs = ps.getGeneratedKeys();
@@ -39,12 +41,15 @@ public class DatabaseHelper {
         return -1;
     }    
 
+
+    // Cập nhật phương thức updateAccount để thêm userName
     public static void updateAccount(Account acc) throws SQLException {
-        String sql = "UPDATE Account SET pin = ?, balance = ? WHERE accountID = ?";
+        String sql = "UPDATE Account SET pin = ?, balance = ?, userName = ? WHERE accountID = ?";
         try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, acc.getPin());
             ps.setDouble(2, acc.getBalance());
-            ps.setInt(3, acc.getAccountID());
+            ps.setString(3, acc.getUserName()); // Cập nhật userName
+            ps.setInt(4, acc.getAccountID());
             ps.executeUpdate();
         }
     }
@@ -55,7 +60,8 @@ public class DatabaseHelper {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                return new Account(rs.getInt("accountID"), rs.getString("pin"), rs.getDouble("balance"));
+                // Trả về Account với userName
+                return new Account(rs.getInt("accountID"), rs.getString("pin"), rs.getDouble("balance"), rs.getString("userName"));
             }
         }
         return null;
@@ -69,23 +75,25 @@ public class DatabaseHelper {
         }
     }
 
+    // Cập nhật phương thức getAllAccounts để bao gồm userName
     public static List<Account> getAllAccounts() throws SQLException {
         List<Account> list = new ArrayList<>();
         String sql = "SELECT * FROM Account";
         try (Connection conn = getConnection(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
-                list.add(new Account(rs.getInt("accountID"), rs.getString("pin"), rs.getDouble("balance")));
+                // Thêm userName khi khởi tạo Account
+                list.add(new Account(rs.getInt("accountID"), rs.getString("pin"), rs.getDouble("balance"), rs.getString("userName")));
             }
         }
         return list;
     }
 
     public static void insertTransaction(Transaction t) throws SQLException {
-        String sql = "INSERT INTO Transactions (accountID, amount, thoiGian, transactionType, status) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Transactions (accountID, amount, transactionTime, transactionType, status) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, t.getAcc().getAccountID());
             ps.setDouble(2, t.getamount());
-            ps.setTimestamp(3, new Timestamp(t.getThoiGian().getTime()));
+            ps.setTimestamp(3, new Timestamp(t.gettransactionTime().getTime()));
             ps.setString(4, t.gettransactionType());
             ps.setString(5, t.getstatus());
             ps.executeUpdate();
@@ -102,10 +110,11 @@ public class DatabaseHelper {
                 Account acc = getAccountByID(id);
                 Transaction t = new Transaction(acc, rs.getDouble("amount"), rs.getString("transactionType"), rs.getString("status"));
                 t.settransactionID(rs.getInt("transactionID"));
-                t.setThoiGian(rs.getTimestamp("thoiGian"));
+                t.settransactionTime(rs.getTimestamp("transactionTime"));
                 list.add(t);
             }
         }
         return list;
     }
+   
 }

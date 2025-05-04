@@ -8,26 +8,33 @@ public class Account extends Menu {
     private int accountID;
     private String pin;
     private Double balance;
+    private String userName; // Thêm biến userName
+
     static Scanner sc = new Scanner(System.in);
 
     public Account() {
         super();
     }
 
-    public Account(int accountID, String pin, double balance) {
+    public Account(int accountID, String pin, double balance, String userName) {
         this.accountID = accountID;
         this.pin = pin;
         this.balance = balance;
+        this.userName = userName;
     }
 
-    public Account(String pin, double balance) {
+    public Account(String pin, double balance, String userName) {
         this.pin = pin;
         this.balance = balance;
+        this.userName = userName;
     }
 
+    //1. Them tai khoan
     public void doAddAccount() {
         while (true) {
             try {
+                System.out.print("Nhap ten tai khoan (UserName): ");
+                String userName = sc.nextLine(); // Nhập tên người dùng
                 System.out.print("Nhap PIN (6 chu so): ");
                 String pin = sc.nextLine();
                 System.out.print("Nhap so du ban dau: ");
@@ -36,7 +43,7 @@ public class Account extends Menu {
                     System.out.println("PIN phai co 6 chu so!");
                     throw new IllegalArgumentException("PIN khong hop le");
                 }
-                Account acc = new Account(pin, balance);
+                Account acc = new Account(pin, balance, userName); // Gọi constructor mới với userName
                 int generatedID = DatabaseHelper.insertAccount(acc);
                 acc.setAccountID(generatedID);
                 System.out.println(">>> Tao tai khoan thanh cong! Ma tai khoan: " + acc.getAccountID());
@@ -48,6 +55,7 @@ public class Account extends Menu {
         }
     }
 
+    //2.Thay doi ma PIN tai khoan
     public void doChangePin() {
         while (true) {
             try {
@@ -74,6 +82,7 @@ public class Account extends Menu {
         }
     }
 
+    //3. Xoa tai khoan khoi danh sach
     public void doDeleteAccount() {
         while (true) {
             try {
@@ -91,13 +100,14 @@ public class Account extends Menu {
         }
     }
 
+    //4. Xem danh sach tai khoan
     public void doViewAccountList() {
         while (true) {
             try {
                 List<Account> list = DatabaseHelper.getAllAccounts();
-                System.out.printf("%-10s| %-10s| %-10s\n", "ID", "PIN", "So du");
+                System.out.printf("%-10s| %-10s| %-15s| %-10s\n", "ID", "PIN", "UserName", "So du");
                 for (Account acc : list) {
-                    System.out.printf("%-10d| %-10s| %-10.2f\n", acc.getAccountID(), acc.getPin(), acc.getBalance());
+                    System.out.printf("%-10d| %-10s| %-15s| %-10.2f\n", acc.getAccountID(), acc.getPin(), acc.getUserName(), acc.getBalance());
                 }
                 break;
             } catch (Exception e) {
@@ -107,6 +117,7 @@ public class Account extends Menu {
         }
     }
 
+    //5. Nap tien
     public void doDepositToAccount() {
         while (true) {
             try {
@@ -129,6 +140,7 @@ public class Account extends Menu {
         }
     }
 
+    //6. Rut tien
     public void doWithdraw() {
         while (true) {
             try {
@@ -153,6 +165,7 @@ public class Account extends Menu {
         }
     }
 
+    //7. Chuyen tien
     public void doTransferMoney() {
         while (true) {
             try {
@@ -187,6 +200,7 @@ public class Account extends Menu {
         }
     }
 
+    //8. Kiem tra so du
     public void doCheckbalance() {
         while (true) {
             try {
@@ -204,6 +218,7 @@ public class Account extends Menu {
         }
     }
 
+    //9. Xem lich su giao dich
     public void doViewTransactionDiary() {
         while (true) {
             try {
@@ -215,7 +230,7 @@ public class Account extends Menu {
                     System.out.println("Tai khoan chua co giao dich nao.");
                     return;
                 }
-                
+
                 System.out.printf("%-5s| %-28s| %-8s| %-15s| %-15s| %-25s\n", "ID", "Thoi gian", "ID Tai khoan", "So tien", "Loai GD", "Mo ta");
                 for (Transaction t : list) {
                     System.out.print(t);
@@ -228,6 +243,7 @@ public class Account extends Menu {
         }
     }
 
+    //Phuong thuc kiem tra khi nhap sai du lieu
     private boolean retryPrompt() {
         while (true) {
             System.out.println("1. Nhap lai thong tin");
@@ -261,6 +277,8 @@ public class Account extends Menu {
     public void setAccountID(int accountID) { this.accountID = accountID; }
     public String getPin() { return pin; }
     public void setPin(String pin) { this.pin = pin; }
+    public String getUserName() { return userName; }
+    public void setUserName(String userName) { this.userName = userName; }
     public Double getBalance() { return balance; }
     public void setBalance(Double balance) { this.balance = balance; }
 }
